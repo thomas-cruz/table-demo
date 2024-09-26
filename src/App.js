@@ -1,25 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Table } from "./Table/index";
+import { useMockAPI } from "./mockAPI";
+import { usePagination } from "./usePagination";
+import { useSorting } from "./useSorting";
+import "./styles.css";
 
-function App() {
+const cols = [
+  { id: "id", header: "Ep. overall", enableSorting: true },
+  {
+    id: "episode",
+    header: "Ep. in season",
+    enableSorting: false,
+  },
+  { id: "title", header: "Title", enableSorting: true },
+];
+
+export const App = () => {
+  const { limit, onPaginationChange, skip, pagination } = usePagination();
+
+  const { sorting, onSortingChange, field, order } = useSorting();
+
+  const [data, count, loading] = useMockAPI("/episodes", {
+    pagination: { skip, limit },
+    sort: { field, order },
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h1>Attack on TanStack Table</h1>
+      <Table
+        cols={cols}
+        data={data}
+        loading={loading}
+        onPaginationChange={onPaginationChange}
+        onSortingChange={onSortingChange}
+        rowCount={count}
+        pagination={pagination}
+        sorting={sorting}
+      />
+    </>
   );
-}
-
-export default App;
+};
